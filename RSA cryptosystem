@@ -1,0 +1,61 @@
+printf("Encrypted message: ");
+for ( i = 0; message[i] != '\0'; i++) {
+character = message[i] - 'A'; // Convert character to number (A=0, B=1, ..., Z=25)
+unsigned long long encrypted_char = encrypt(character, e, n);
+printf("%llu ", encrypted_char);
+}
+printf("\n");
+return 0;
+}
+OUTPUT:
+Enter the message (all uppercase letters without spaces): HELLO
+Encrypted message: 902071 72125342 26806698 26806698 23107213
+27. Write a C program for Bob uses the RSA cryptosystem with a very large modulus n for which
+the factorization cannot be found in a reasonable amount of time. Suppose Alice sends a
+message to Bob by representing each alphabetic character as an integer between 0 and 25 (A S 0,
+c, Z S 25) and then encrypting each number separately using RSA with large e and large n. Is this
+method secure? If not, describe the most efficient attack against encryption method.
+PROGRAM:
+#include <stdio.h>
+#include <stdint.h>
+uint64_t mod_pow(uint64_t base, uint64_t exponent, uint64_t modulus)
+{
+uint64_t result = 1;
+base = base % modulus;
+while (exponent > 0)
+{
+if (exponent % 2 == 1)
+{
+result = (result * base) % modulus;
+}
+exponent >>= 1;
+base = (base * base) % modulus;
+}
+return result;
+}
+int main()
+{
+uint64_t n = 12345678901;
+uint64_t e = 65537;
+uint64_t d = 123456789;
+int i;
+char message[] = "HELLO";
+int message_length = sizeof(message) - 1;
+printf("Original Message: %s\n", message);
+printf("Encrypted Message: ");
+for (i = 0; i < message_length; i++)
+{
+uint64_t encrypted = mod_pow(message[i] - 'A', e, n);
+printf("%llu ", encrypted);
+}
+printf("\n");
+printf("Decrypted Message: ");
+for (i = 0; i < message_length; i++)
+{
+uint64_t encrypted = mod_pow(message[i] - 'A', e, n);
+uint64_t decrypted = mod_pow(encrypted, d, n) + 'A';
+printf("%c", (char)decrypted);
+}
+printf("\n");
+return 0;
+}
